@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="qiudidia 的网站 - 游戏资源分享与开发者交流平台。提供 COD 系列资源、开发者信息与社区群组。">
+    <title>qiudidia的资源分享站</title>
+    <link rel="icon" href="./img/favicon.ico" />
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        /* ===== 全局背景 ===== */
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('./img/4.png');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .glass {
+            background: rgba(10, 20, 30, 0.65) !important;
+            backdrop-filter: blur(10px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            color: #f0f0f0;
+            transition: background 0.3s;
+        }
+
+        .site-header.glass {
+            background: rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        h1, h2, h3, h4, p, .nav-link, .btn, .developer-name, .contact-value, .chat-group-number {
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .btn, .download-btn, .social-link, .snow-toggle-btn {
+            background: rgba(30, 40, 60, 0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover, .download-btn:hover, .social-link:hover {
+            background: rgba(70, 130, 200, 0.8);
+            border-color: #87CEEB;
+        }
+
+        .hero-bg {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #mobile-menu.glass {
+            background: rgba(0, 0, 0, 0.8) !important;
+        }
+
+        /* 下雪效果样式 */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(0.5px);
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(100vh) translateX(20px) rotate(360deg); opacity: 0; }
+        }
+        
+        .snow-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .snow-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        .snow-toggle-btn.active {
+            background: rgba(135, 206, 250, 0.4);
+            color: #87CEFA;
+        }
+
+        /* 游戏网格样式 */
+        .games-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .game-card .game-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+        }
+        .game-image {
+            width: 100%;
+            height: 180px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .game-title {
+            font-size: 1.4rem;
+            margin: 0.25rem 0;
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-top: 0.3rem;
+        }
+
+        /* ===== 欢迎遮罩层样式 ===== */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        #welcome-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .welcome-card {
+            max-width: 450px;
+            width: 85%;
+            background: rgba(20, 30, 45, 0.95);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 32px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.7);
+            text-align: center;
+            color: white;
+            animation: gentle-appear 0.6s;
+        }
+        @keyframes gentle-appear {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .welcome-card h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: none;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+        }
+        .welcome-card p {
+            font-size: 1.1rem;
+            margin: 0.5rem 0 1.8rem;
+            opacity: 0.9;
+        }
+        .welcome-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 60px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            margin-bottom: 1.8rem;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .welcome-input:focus {
+            border-color: #87CEEB;
+            background: rgba(255,255,255,0.25);
+        }
+        .welcome-btn {
+            background: rgba(70, 130, 200, 0.9);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+        .welcome-btn:hover {
+            background: rgb(90, 160, 240);
+            transform: scale(1.02);
+        }
+        .welcome-btn:active {
+            transform: scale(0.98);
+        }
+        .skip-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+        .skip-link:hover {
+            color: white;
+        }
+
+        /* ===== 设置板块样式 ===== */
+        .settings-section {
+            margin-top: 2rem;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .setting-card {
+            padding: 1.5rem;
+            border-radius: 24px;
+        }
+        .setting-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 0.5rem;
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+        .setting-label {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.2);
+            transition: .3s;
+            border-radius: 34px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(23px);
+        }
+        /* 背景切换按钮样式 */
+        .bg-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .bg-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 70px;
+            transition: all 0.2s;
+        }
+        .bg-btn:hover {
+            transform: scale(1.05);
+            background: #45a049;
+        }
+        .current-bg-text {
+            text-align: center;
+            color: white;
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .name-edit {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .name-edit input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            outline: none;
+        }
+        .name-edit button {
+            background: rgba(70, 130, 200, 0.8);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .name-edit button:hover {
+            background: rgba(90, 160, 240, 0.9);
+        }
+        .current-name {
+            background: rgba(0,0,0,0.3);
+            padding: 0.8rem 1.2rem;
+            border-radius: 40px;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            word-break: break-word;
+        }
+
+        /* ===== 北京时间显示卡片 ===== */
+        .beijing-time-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem 1.5rem;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 60px;
+            padding: 0.7rem 1.8rem 0.7rem 1.5rem;
+            margin: 1rem 0 0.5rem 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .time-icon {
+            font-size: 1.8rem;
+            color: #ffd966;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.7));
+        }
+        .time-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.4;
+        }
+        .time-day {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff8e7;
+            text-shadow: 0 2px 8px #00000080;
+        }
+        .time-clock {
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #f0f0f0;
+            text-shadow: 0 0 8px #00aaff, 0 2px 10px black;
+            line-height: 1.2;
+        }
+        .time-meridian {
+            font-size: 1.0rem;
+            margin-left: 4px;
+            opacity: 0.8;
+        }
+        .time-zone-badge {
+            background: rgba(255,215,0,0.25);
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.9rem;
+            border: 1px solid #ffd96677;
+            color: #ffeb99;
+            white-space: nowrap;
+        }
+        .hero-card .beijing-time-card {
+            margin-top: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* ===== 代码语言板块样式 ===== */
+        .code-lang-section {
+            margin-top: 2rem;
+        }
+        .code-lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .code-lang-card {
+            padding: 1.5rem;
+            border-radius: 24px;
+            text-align: center;
+        }
+        .code-lang-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #87CEEB;
+        }
+        .code-lang-title {
+            font-size: 1.3rem;
+            margin: 0.5rem 0;
+            color: #fff;
+        }
+        .code-lang-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            color: #ddd;
+        }
+        .template-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            text-align: center;
+        }
+        .template-info p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+        .template-info i {
+            color: #87CEEB;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎遮罩层 -->
+    <div id="welcome-overlay">
+        <div class="welcome-card glass">
+            <h2>欢迎你的来访</h2>
+            <p>如何称呼你？</p>
+            <input type="text" id="username-input" class="welcome-input" placeholder="请输入你的名字" autofocus>
+            <button id="enter-btn" class="welcome-btn">进入网站</button>
+            <a href="#" id="skip-welcome" class="skip-link">直接进入 (称呼为“bro”)</a>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <header class="site-header glass">
+        <div class="header-content container">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fa fa-gamepad"></i>
+                </div>
+                <h1 class="logo-text">qiudidia的资源分享站</h1>
+            </div>
+            
+            <nav class="desktop-nav">
+                <div class="nav-links">
+                    <a href="#home" class="nav-link">首页</a>
+                    <a href="#game-resources" class="nav-link">游戏资源下载</a>
+                    <a href="#did-you-know" class="nav-link">你知道吗？</a>
+                    <a href="#developers" class="nav-link">关于开发者</a>
+                    <a href="#join-chat" class="nav-link">加入交谈</a>
+                    <a href="#code-lang" class="nav-link">代码语言</a>
+                    <a href="#history-download" class="nav-link">历史版本</a>
+                    <a href="#settings" class="nav-link">设置</a>
+                </div>
+            </nav>
+            
+            <div class="version-badge">3.1</div>
+            
+            <button id="menu-toggle" class="mobile-menu-btn" aria-label="切换导航菜单" aria-expanded="false">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+        </div>
+        
+        <div id="mobile-menu" class="mobile-menu glass">
+            <div class="mobile-menu-content container">
+                <a href="#home" class="mobile-menu-link">首页</a>
+                <a href="#game-resources" class="mobile-menu-link">游戏资源下载</a>
+                <a href="#did-you-know" class="mobile-menu-link">你知道吗？</a>
+                <a href="#developers" class="mobile-menu-link">关于开发者</a>
+                <a href="#join-chat" class="mobile-menu-link">加入交谈</a>
+                <a href="#code-lang" class="mobile-menu-link">代码语言</a>
+                <a href="#history-download" class="mobile-menu-link">历史版本</a>
+                <a href="#settings" class="mobile-menu-link">设置</a>
+                <div class="mobile-version">
+                    <span>3.1</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 首页部分 -->
+        <section id="home" class="hero-section">
+            <div class="hero-bg" style="display: none;">
+                <img src="./img/4.png" alt="首页背景图" loading="lazy">
+                <div class="hero-overlay"></div>
+            </div>
+            
+            <div class="hero-content container">
+                <div class="hero-card glass fade-in-up">
+                    <div class="hero-icon">
+                        <i class="fa fa-gamepad"></i>
+                    </div>
+                    <h2 class="hero-title" id="greeting-target">bro，欢迎来到qiudidia的资源分享站</h2>
+                    
+                    <!-- 北京时间显示卡片 -->
+                    <div class="beijing-time-card" id="beijingTimeCard">
+                        <i class="fa fa-clock-o time-icon"></i>
+                        <div class="time-info">
+                            <span class="time-day" id="timeWeekday">加载中...</span>
+                            <span class="time-clock" id="timeClock">--:--:--</span>
+                        </div>
+                        <span class="time-zone-badge"><i class="fa fa-map-marker"></i> 北京时间</span>
+                    </div>
+
+                    <p class="hero-description">这里是游戏资源分享和系统资源分享的网站</p>
+                    <div class="hero-buttons">
+                        <a href="#game-resources" class="btn">浏览游戏资源</a>
+                        <a href="#did-you-know" class="btn">你知道吗？</a>
+                        <a href="#developers" class="btn">关于开发者</a>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card glass">
+                        <div class="feature-icon"><i class="fa fa-download"></i></div>
+                        <h3 class="feature-title">游戏资源</h3>
+                        <p class="feature-description">这里都是游戏的盗版资源哦、后续会更新更多的游戏、系统</p>
+                    </div>
+                    <div class="feature-card glass">
+                        <div class="feature-icon"><i class="fa fa-code"></i></div>
+                        <h3 class="feature-title">开发者</h3>
+                        <p class="feature-description">与开发者讨论问题：）</p>
+                    </div>
+                    <div class="feature-card glass">
+                        <div class="feature-icon"><i class="fa fa-lightbulb-o"></i></div>
+                        <h3 class="feature-title">你知道吗？</h3>
+                        <p class="feature-description">一些秘密和问题！</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游戏资源下载部分 -->
+        <section id="game-resources" class="section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title">COD系列资源下载</h2>
+                    
+                    <div class="games-list">
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod4.png" alt="使命召唤4游戏封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤4</h3>
+                                    <p class="game-description">123网盘</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-P2e03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod6.png" alt="使命召唤6游戏封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤6</h3>
+                                    <p class="game-description">123网盘</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-22e03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod8.png" alt="使命召唤8游戏封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤8</h3>
+                                    <p class="game-description">123网盘</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-W2e03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod7.png" alt="使命召唤7黑色行动封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤7</h3>
+                                    <p class="game-description">123网盘 · 黑色行动</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-s2e03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod.png" alt="使命召唤9黑色行动2封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤9</h3>
+                                    <p class="game-description">123网盘 · 黑色行动2</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-mse03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="game-card glass">
+                            <div class="game-content">
+                                <div class="game-image"><img src="./img/cod12.png" alt="使命召唤12黑色行动3封面" loading="lazy"></div>
+                                <div class="game-info">
+                                    <h3 class="game-title"><i class="fa fa-gamepad game-icon"></i>使命召唤12</h3>
+                                    <p class="game-description">123网盘 · 黑色行动3</p>
+                                    <a href="https://www.123pan.cn/s/Gzg7Vv-Ese03.html" target="_blank" rel="noopener noreferrer" class="download-btn"><i class="fa fa-download download-icon"></i>点击下载</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-highlight">
+                        <h3 class="highlight-text animate-pulse">🎮 更多资源整理中，感谢您的支持！</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 你知道吗？部分 -->
+        <section id="did-you-know" class="section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title">你知道吗？</h2>
+                    <p class="section-description">发现游戏世界中的有趣秘密和冷知识</p>
+                    
+                    <div class="secrets-container">
+                        <div id="secret-cards-container" class="secret-cards-container">
+                            <div class="secret-card glass active">
+                                <div class="secret-icon secret-icon-1"><i class="fa fa-lightbulb-o"></i></div>
+                                <h3 class="secret-title">你知道吗？</h3>
+                                <p class="secret-description">开发人员不止有LANREN和qiudidia，还有DeepSeek哦</p>
+                                <div class="secret-source">来源：开发者描述</div>
+                            </div>
+                            <div class="secret-card glass secret-gradient-2 next">
+                                <div class="secret-icon secret-icon-2"><i class="fa fa-question-circle"></i></div>
+                                <h3 class="secret-title">你知道吗？</h3>
+                                <p class="secret-description">使命召唤已经有22年的历史了！！！</p>
+                                <div class="secret-source">来源：互联网发现</div>
+                            </div>
+                            <div class="secret-card glass next">
+                                <div class="secret-icon secret-icon-1"><i class="fa fa-info-circle"></i></div>
+                                <h3 class="secret-title">你知道吗？</h3>
+                                <p class="secret-description">你知道COD总共出过多少个模式吗？</p>
+                                <div class="secret-source">来源：开发者问你的问题</div>
+                            </div>
+                            <div class="secret-card glass secret-gradient-2 next">
+                                <div class="secret-icon secret-icon-2"><i class="fa fa-star"></i></div>
+                                <h3 class="secret-title">你知道吗？</h3>
+                                <p class="secret-description">你知道COD的141小队的人物都是谁吗？</p>
+                                <div class="secret-source">来源：开发者问你的问题</div>
+                            </div>
+                        </div>
+                        <button id="prev-secret" class="secret-nav-btn secret-prev-btn"><i class="fa fa-chevron-left"></i></button>
+                        <button id="next-secret" class="secret-nav-btn secret-next-btn"><i class="fa fa-chevron-right"></i></button>
+                        <div class="secret-indicators">
+                            <div class="secret-indicator active"></div><div class="secret-indicator"></div><div class="secret-indicator"></div><div class="secret-indicator"></div>
+                        </div>
+                    </div>
+                    <div class="section-highlight"><h3 class="highlight-text animate-pulse">更多秘密等待发现！</h3></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 开发者部分 -->
+        <section id="developers" class="section">
+            <div class="section-content container">
+                <h2 class="section-title">开发者</h2>
+                <p class="section-description">如有疑问，请询问以下开发者</p>
+                <div class="developers-grid">
+                    <div class="developer-card glass">
+                        <div class="developer-content">
+                            <div class="avatar-container"><div class="avatar-frame"><img src="./img/qiudidia.ico" alt="qiudidia头像" loading="lazy"></div></div>
+                            <h3 class="developer-name">qiudidia</h3>
+                            <p class="developer-role">分享站创建者 & 游戏、系统资源搬运分享者</p>
+                            <div class="contact-card">
+                                <h4 class="contact-title">联系信息</h4>
+                                <div class="contact-info">
+                                    <div class="contact-item"><div class="contact-icon-container"><i class="fa fa-qq contact-icon"></i></div><div><p class="contact-label">QQ号</p><p class="contact-value">3257717475</p></div></div>
+                                    <div class="contact-item"><div class="contact-icon-container"><i class="fa fa-envelope contact-icon"></i></div><div><p class="contact-label">邮箱</p><p class="contact-value">3257717475@qq.com</p></div></div>
+                                </div>
+                            </div>
+                            <div class="social-links"><a href="https://github.com/qiudidia" class="social-link" rel="noopener" target="_blank"><i class="fa fa-github social-icon"></i></a></div>
+                        </div>
+                    </div>
+                    <div class="developer-card glass">
+                        <div class="developer-content">
+                            <div class="avatar-container"><div class="avatar-frame"><img class="deepseek" src="./img/LANREN.ico" alt="LANREN头像" loading="lazy"></div></div>
+                            <h3 class="developer-name">LANREN</h3>
+                            <p class="developer-role">网站开发支持</p>
+                            <div class="contact-card">
+                                <h4 class="contact-title">联系信息</h4>
+                                <div class="contact-info">
+                                    <div class="contact-item"><div class="contact-icon-container"><i class="fa fa-qq contact-icon"></i></div><div><p class="contact-label">QQ号</p><p class="contact-value">2118254764</p></div></div>
+                                    <div class="contact-item"><div class="contact-icon-container"><i class="fa fa-envelope contact-icon"></i></div><div><p class="contact-label">邮箱</p><p class="contact-value">2118254764@qq.com</p></div></div>
+                                </div>
+                            </div>
+                            <div class="social-links"><a href="https://github.com/SLSYSL" class="social-link" rel="noopener" target="_blank"><i class="fa fa-github social-icon"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-highlight"><h3 class="highlight-text animate-pulse">感谢你对我们的支持！</h3></div>
+            </div>
+        </section>
+
+        <!-- 加入交谈部分 -->
+        <section id="join-chat" class="section join-chat-section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title">加入我们的交谈吧！</h2>
+                    <p class="section-description">加入我们的COD交流群，与更多玩家一起讨论游戏心得和技巧</p>
+                    <div class="chat-groups">
+                        <div class="chat-group glass"><h3 class="chat-group-title"><i class="fa fa-users chat-group-icon"></i>COD交谈1群</h3><div class="chat-group-number">774209663</div><p class="chat-group-description">欢迎加入我们的第一个交流群，这里有热情的玩家和丰富的游戏讨论</p></div>
+                        <div class="chat-group glass"><h3 class="chat-group-title"><i class="fa fa-users chat-group-icon"></i>COD交谈2群</h3><div class="chat-group-number">1050059787</div><p class="chat-group-description">第二个交流群也已开放，更多玩家等待你的加入，一起畅聊COD！</p></div>
+                    </div>
+                    <div class="section-highlight"><h3 class="highlight-text animate-pulse">2个群目前有一个群活跃度不高 期待你的加入！</h3></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代码语言和前端模板板块 -->
+        <section id="code-lang" class="section code-lang-section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title"><i class="fa fa-code"></i> 代码语言 & 前端模板</h2>
+                    <p class="section-description">了解本网站构建所使用的技术栈</p>
+                    
+                    <div class="code-lang-grid">
+                        <!-- HTML5 -->
+                        <div class="code-lang-card glass">
+                            <i class="fa fa-html5 code-lang-icon"></i>
+                            <h3 class="code-lang-title">HTML5</h3>
+                            <p class="code-lang-desc">页面结构与内容语义化</p>
+                        </div>
+                        
+                        <!-- CSS3 -->
+                        <div class="code-lang-card glass">
+                            <i class="fa fa-css3 code-lang-icon"></i>
+                            <h3 class="code-lang-title">CSS3</h3>
+                            <p class="code-lang-desc">毛玻璃效果与响应式布局</p>
+                        </div>
+                        
+                        <!-- JavaScript -->
+                        <div class="code-lang-card glass">
+                            <i class="fa fa-code code-lang-icon"></i>
+                            <h3 class="code-lang-title">JavaScript</h3>
+                            <p class="code-lang-desc">交互逻辑与动态效果</p>
+                        </div>
+                        
+                        <!-- Font Awesome -->
+                        <div class="code-lang-card glass">
+                            <i class="fa fa-flag code-lang-icon"></i>
+                            <h3 class="code-lang-title">Font Awesome</h3>
+                            <p class="code-lang-desc">丰富的图标库，增强视觉层次</p>
+                        </div>
+                    </div>
+
+                    <!-- 模板信息 -->
+                    <div class="template-info glass" style="margin-top: 2rem;">
+                        <p><i class="fa fa-paint-brush"></i> <strong>前端模板：</strong> 自定义毛玻璃卡片式设计</p>
+                        <p><i class="fa fa-pencil-square-o"></i> <strong>设计特点：</strong> 蓝紫色科技感主色调、圆角卡片、网格布局、沉浸式背景</p>
+                        <p><i class="fa fa-cog"></i> <strong>核心功能：</strong> 个性化欢迎、下雪效果、背景切换、北京时间显示、秘密卡片轮播</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 新增：网站历史版本下载板块 ===== -->
+        <section id="history-download" class="section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title"><i class="fa fa-history"></i> 网站历史版本下载</h2>
+                    <p class="section-description">这里收录了本站的过往版本，供怀旧或体验不同时期的界面</p>
+                    
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <a href="https://wwbbw.lanzouv.com/b019vpnsva" target="_blank" rel="noopener noreferrer" class="download-btn" style="font-size: 1.2rem; padding: 0.8rem 2.5rem; background: rgba(70, 130, 200, 0.9);">
+                            <i class="fa fa-cloud-download"></i> 前往蓝奏云下载
+                        </a>
+                        <p style="margin-top: 1rem; color: #ffd966; font-size: 1rem;">
+                            <i class="fa fa-key"></i> 访问密码：<code style="background: rgba(0,0,0,0.3); padding: 0.2rem 0.8rem; border-radius: 20px; border: 1px solid #ffd96666;">html</code>
+                        </p>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+                            <i class="fa fa-info-circle"></i> 点击按钮进入网盘页面，点击文件即可下载
+                        </p>
+                    </div>
+
+                    <div class="section-highlight">
+                        <h3 class="highlight-text animate-pulse">📦 包含从beta版到现版本的多个版本</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 设置板块 -->
+        <section id="settings" class="section settings-section">
+            <div class="section-content container">
+                <div class="section-card glass">
+                    <h2 class="section-title"><i class="fa fa-cogs"></i> 设置</h2>
+                    <p class="section-description">自定义你的浏览体验</p>
+                    
+                    <div class="settings-grid">
+                        <!-- 下雪效果设置 -->
+                        <div class="setting-card glass">
+                            <h3 class="setting-title"><i class="fa fa-snowflake-o"></i> 下雪效果</h3>
+                            <div class="setting-item">
+                                <span class="setting-label"><i class="fa fa-power-off"></i> 开启/关闭</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="snow-toggle-setting" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 背景切换 -->
+                        <div class="setting-card glass">
+                            <h3 class="setting-title"><i class="fa fa-picture-o"></i> 背景切换</h3>
+                            <div class="bg-buttons">
+                                <button class="bg-btn" onclick="changeBg(1)">图片1</button>
+                                <button class="bg-btn" onclick="changeBg(2)">图片2</button>
+                                <button class="bg-btn" onclick="changeBg(3)">图片3</button>
+                                <button class="bg-btn" onclick="changeBg(4)">图片4</button>
+                            </div>
+                            <div class="current-bg-text" id="currentBg">当前: 图片4</div>
+                        </div>
+                        
+                        <!-- 名字设置 -->
+                        <div class="setting-card glass">
+                            <h3 class="setting-title"><i class="fa fa-user"></i> 我的称呼</h3>
+                            <div class="current-name" id="current-name-display">朋友</div>
+                            <div class="name-edit">
+                                <input type="text" id="new-name-input" placeholder="输入新称呼">
+                                <button id="update-name-btn">更新</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer glass">
+        <div class="footer-content container">
+            <h3 class="footer-title">qiudidia的网站</h3>
+            <p class="footer-description">分享游戏盗版资源、系统资源的网站</p>
+            <div class="footer-social">
+                <a href="#" class="footer-social-link"><i class="fa fa-facebook"></i></a>
+                <a href="#" class="footer-social-link"><i class="fa fa-twitter"></i></a>
+                <a href="#" class="footer-social-link"><i class="fa fa-instagram"></i></a>
+                <a href="#" class="footer-social-link"><i class="fa fa-github"></i></a>
+            </div>
+            <p class="footer-copyright">Powered by qiudidia</p>
+        </div>
+    </footer>
+
+    <!-- 下雪效果容器和按钮 -->
+    <div id="snow-container" class="snow-container"></div>
+    <button id="snow-toggle" class="snow-toggle-btn" aria-label="切换下雪效果"><i class="fa fa-snowflake-o"></i></button>
+
+    <script>
+        // ---------- 背景切换函数 ----------
+        function changeBg(num) {
+            document.body.style.backgroundImage = "url('./img/" + num + ".png')";
+            document.getElementById('currentBg').innerHTML = "当前: 图片" + num;
+            localStorage.setItem('bgImage', num + '.png');
+        }
+
+        // ---------- 北京时间显示功能 ----------
+        function updateBeijingTime() {
+            const weekdayArr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const beijingTime = new Date(utc + (3600000 * 8));
+            
+            const year = beijingTime.getFullYear();
+            const month = String(beijingTime.getMonth() + 1).padStart(2,'0');
+            const day = String(beijingTime.getDate()).padStart(2,'0');
+            const week = weekdayArr[beijingTime.getDay()];
+            const hours = String(beijingTime.getHours()).padStart(2,'0');
+            const minutes = String(beijingTime.getMinutes()).padStart(2,'0');
+            const seconds = String(beijingTime.getSeconds()).padStart(2,'0');
+            
+            const timeClockStr = `${hours}:${minutes}:${seconds}`;
+            const timeDayStr = `${year}.${month}.${day} ${week}`;
+            
+            const weekdaySpan = document.getElementById('timeWeekday');
+            const clockSpan = document.getElementById('timeClock');
+            if (weekdaySpan) weekdaySpan.textContent = timeDayStr;
+            if (clockSpan) clockSpan.textContent = timeClockStr;
+        }
+
+        // ========== 移动端菜单切换 ==========
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+                const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+                menuToggle.setAttribute('aria-expanded', !isExpanded);
+            });
+        }
+
+        // ========== 秘密卡片轮播 ==========
+        const secretCards = document.querySelectorAll('.secret-card');
+        const prevBtn = document.getElementById('prev-secret');
+        const nextBtn = document.getElementById('next-secret');
+        const indicators = document.querySelectorAll('.secret-indicator');
+        let currentIndex = 0;
+        let autoSlideInterval = null;
+
+        function updateSecretCards() {
+            if (!secretCards.length || !indicators.length) return;
+
+            secretCards.forEach((card, index) => {
+                card.classList.remove('active', 'prev', 'next');
+
+                if (index === currentIndex) {
+                    card.classList.add('active');
+                } else if (index < currentIndex) {
+                    card.classList.add('prev');
+                } else {
+                    card.classList.add('next');
+                }
+            });
+
+            indicators.forEach((indicator, index) => {
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (secretCards.length) {
+                    currentIndex = (currentIndex - 1 + secretCards.length) % secretCards.length;
+                    updateSecretCards();
+                    resetAutoSlide();
+                }
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (secretCards.length) {
+                    currentIndex = (currentIndex + 1) % secretCards.length;
+                    updateSecretCards();
+                    resetAutoSlide();
+                }
+            });
+        }
+
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                if (secretCards.length) {
+                    currentIndex = index;
+                    updateSecretCards();
+                    resetAutoSlide();
+                }
+            });
+        });
+
+        function startAutoSlide() {
+            if (autoSlideInterval) clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(() => {
+                if (secretCards.length) {
+                    currentIndex = (currentIndex + 1) % secretCards.length;
+                    updateSecretCards();
+                }
+            }, 5000);
+        }
+
+        function resetAutoSlide() {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            }
+        }
+
+        if (secretCards.length && indicators.length) {
+            updateSecretCards();
+            startAutoSlide();
+        }
+
+        // ========== 平滑滚动 ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (!targetId || targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    if (mobileMenu && mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
+                        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+                    }
+
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ========== 滚动时导航栏效果 ==========
+        const header = document.querySelector('.site-header');
+        let isScrolling = false;
+        if (header) {
+            window.addEventListener('scroll', () => {
+                if (!isScrolling) {
+                    window.requestAnimationFrame(() => {
+                        if (window.scrollY > 50) {
+                            header.style.backdropFilter = 'blur(15px)';
+                            header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
+                        } else {
+                            header.style.backdropFilter = 'blur(10px)';
+                            header.style.boxShadow = 'none';
+                        }
+                        isScrolling = false;
+                    });
+                    isScrolling = true;
+                }
+            });
+        }
+
+        // ========== 下雪效果 ==========
+        const snowConfig = {
+            snowflakeCount: 80,
+            minSize: 2,
+            maxSize: 7,
+            minSpeed: 3,
+            maxSpeed: 8,
+            minOpacity: 0.5,
+            maxOpacity: 0.9,
+            isActive: true
+        };
+        let snowflakes = [];
+        const snowContainer = document.getElementById('snow-container');
+        const snowToggle = document.getElementById('snow-toggle');
+
+        function initSnow() {
+            if (!snowContainer) return;
+            clearSnow();
+            if (snowConfig.isActive) {
+                createSnowflakes();
+            }
+            updateToggleButton();
+        }
+
+        function createSnowflakes() {
+            for (let i = 0; i < snowConfig.snowflakeCount; i++) {
+                createSnowflake();
+            }
+        }
+
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            const size = randomInt(snowConfig.minSize, snowConfig.maxSize);
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            const startX = Math.random() * 100;
+            snowflake.style.left = `${startX}vw`;
+            const opacity = randomFloat(snowConfig.minOpacity, snowConfig.maxOpacity);
+            snowflake.style.opacity = opacity;
+            const duration = randomInt(snowConfig.minSpeed, snowConfig.maxSpeed);
+            const delay = Math.random() * 5;
+            snowflake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+            snowContainer.appendChild(snowflake);
+            snowflakes.push(snowflake);
+        }
+
+        function clearSnow() {
+            snowflakes.forEach(sf => {
+                if (sf.parentNode) sf.parentNode.removeChild(sf);
+            });
+            snowflakes = [];
+        }
+
+        function toggleSnow() {
+            snowConfig.isActive = !snowConfig.isActive;
+            if (snowConfig.isActive) {
+                createSnowflakes();
+            } else {
+                clearSnow();
+            }
+            updateToggleButton();
+            saveSnowState();
+            
+            // 同步设置开关
+            const snowToggleSetting = document.getElementById('snow-toggle-setting');
+            if (snowToggleSetting) {
+                snowToggleSetting.checked = snowConfig.isActive;
+            }
+        }
+
+        function updateToggleButton() {
+            if (!snowToggle) return;
+            if (snowConfig.isActive) { 
+                snowToggle.classList.add('active'); 
+                snowToggle.setAttribute('aria-label', '关闭下雪效果'); 
+            } else { 
+                snowToggle.classList.remove('active'); 
+                snowToggle.setAttribute('aria-label', '开启下雪效果'); 
+            }
+        }
+
+        function saveSnowState() { 
+            try { localStorage.setItem('snowEffectActive', snowConfig.isActive.toString()); } catch (e) {} 
+        }
+
+        function loadSnowState() { 
+            try { 
+                const saved = localStorage.getItem('snowEffectActive'); 
+                if (saved !== null) snowConfig.isActive = saved === 'true'; 
+            } catch (e) {} 
+        }
+
+        function randomInt(min, max) { 
+            return Math.floor(Math.random() * (max - min + 1)) + min; 
+        }
+
+        function randomFloat(min, max) { 
+            return Math.random() * (max - min) + min; 
+        }
+
+        function handleResize() { 
+            clearSnow(); 
+            if (snowConfig.isActive) createSnowflakes(); 
+        }
+
+        // ========== 页面加载初始化 ==========
+        (function() {
+            // 加载保存的背景
+            try {
+                const savedBg = localStorage.getItem('bgImage');
+                if (savedBg) {
+                    document.body.style.backgroundImage = "url('./img/" + savedBg + "')";
+                    const bgNum = savedBg.replace('.png', '');
+                    const bgText = document.getElementById('currentBg');
+                    if (bgText) bgText.innerHTML = '当前: 图片' + bgNum;
+                }
+            } catch (e) {}
+
+            // 北京时间更新
+            updateBeijingTime();
+            setInterval(updateBeijingTime, 1000);
+
+            // 下雪效果初始化
+            loadSnowState();
+            initSnow();
+            if (snowToggle) {
+                snowToggle.addEventListener('click', toggleSnow);
+            }
+            window.addEventListener('resize', handleResize);
+
+            // 下雪开关联动
+            const snowToggleSetting = document.getElementById('snow-toggle-setting');
+            if (snowToggleSetting) {
+                snowToggleSetting.checked = snowConfig.isActive;
+                snowToggleSetting.addEventListener('change', function() {
+                    if (this.checked !== snowConfig.isActive) {
+                        toggleSnow();
+                    }
+                });
+            }
+
+            // 欢迎遮罩
+            const overlay = document.getElementById('welcome-overlay');
+            const input = document.getElementById('username-input');
+            const enterBtn = document.getElementById('enter-btn');
+            const skipLink = document.getElementById('skip-welcome');
+            const greetingTarget = document.getElementById('greeting-target');
+
+            function enterSite(username) {
+                if (!username || username.trim() === '') username = '朋友';
+                if (greetingTarget) greetingTarget.textContent = `${username}，欢迎来到qiudidia的资源分享站`;
+                if (overlay) overlay.classList.add('fade-out');
+                try { localStorage.setItem('visitorName', username); } catch (e) {}
+            }
+
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        enterSite(input.value);
+                    }
+                });
+            }
+            if (enterBtn) {
+                enterBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    enterSite(input.value);
+                });
+            }
+            if (skipLink) {
+                skipLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    enterSite('bro');
+                });
+            }
+
+            // 名字修改
+            const currentNameDisplay = document.getElementById('current-name-display');
+            const newNameInput = document.getElementById('new-name-input');
+            const updateNameBtn = document.getElementById('update-name-btn');
+            
+            if (currentNameDisplay && newNameInput && updateNameBtn && greetingTarget) {
+                const currentName = localStorage.getItem('visitorName') || '朋友';
+                currentNameDisplay.textContent = currentName;
+                
+                updateNameBtn.addEventListener('click', function() {
+                    const newName = newNameInput.value.trim();
+                    if (newName) {
+                        currentNameDisplay.textContent = newName;
+                        greetingTarget.textContent = `${newName}，欢迎来到qiudidia的资源分享站`;
+                        try { localStorage.setItem('visitorName', newName); } catch (e) {}
+                        newNameInput.value = '';
+                    }
+                });
+                
+                newNameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const newName = this.value.trim();
+                        if (newName) {
+                            currentNameDisplay.textContent = newName;
+                            greetingTarget.textContent = `${newName}，欢迎来到qiudidia的资源分享站`;
+                            try { localStorage.setItem('visitorName', newName); } catch (e) {}
+                            this.value = '';
+                        }
+                    }
+                });
+            }
+        })();
+
+        // 页面卸载时清理定时器
+        window.addEventListener('beforeunload', () => {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
+        });
+    </script>
+</body>
+</html>
